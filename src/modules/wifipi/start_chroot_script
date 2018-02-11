@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# <Script Name>
+# <Description what this module does>
+# Written by <Author>
+# GPL V3
+########
+
+# Source error handling, leave this in place
+source /common.sh
+install_cleanup_trap
+
+echo "ASDFASDFASDFASDFASDFASDFASDFASDFASDFASDF"
+
+# Modify the network file to point people to wpa-supplicant
+# sed -i "s@here\"@phere\" # For WiFiPi, use /boot/wifipi-wpa-supplicant.conf!@g" /filesystem/boot/wifipi-network.txt
+
+unpack /filesystem/home/pi /home/pi pi
+unpack /filesystem/home/root /root root
+unpack /filesystem/boot /boot
+
+
+apt-get update
+apt-get install -y dnsmasq hostapd
+
+# Add things to the hostapd configuration
+echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" >> /etc/default/hostapd
+# Disable hostapd from coming up on startup. If it does, the autohotspot thinks
+# the wifi is already active
+systemctl disable hostapd
+
+# Add things to the dnsmasq configuration
+DNSMASQ_CONFIG_FILE=/etc/dnsmasq.conf
+echo "#AutoHotspot config" >> $DNSMASQ_CONFIG_FILE
+echo no-resolv >> $DNSMASQ_CONFIG_FILE
+echo interface=wlan0 >> $DNSMASQ_CONFIG_FILE
+echo bind-interfaces  >> $DNSMASQ_CONFIG_FILE
+echo dhcp-range=10.0.0.50,10.0.0.150,12h >> $DNSMASQ_CONFIG_FILE
+
+# For those of us not living in england
+sed -i 's/gb/us/g' /etc/default/keyboard
+
+# Unpack root at the end
+unpack /filesystem/root /
+
+# Make sure the script we just moved has the right permissions...
+chmod +x /usr/bin/autohotspot
+
+# This should get things up and running
+sudo systemctl enable autohotspot.service
+
+# TODO: Need to implement the autohotspot with cron
+echo "Doing cron things"
+crontab -l > mycron
+echo "* * * * * /usr/bin/autohotspot >> /var/log/autohotspot.log" >> mycron
+crontab mycron
+rm mycron
+echo "Done with cron things"

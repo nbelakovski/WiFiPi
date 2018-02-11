@@ -1,0 +1,3 @@
+export DIST_NAME=WiFiPi
+export DIST_VERSION=0.1
+export MODULES="base(network, wifipi)"
