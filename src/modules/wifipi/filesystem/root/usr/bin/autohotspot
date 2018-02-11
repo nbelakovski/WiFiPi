@@ -65,6 +65,8 @@ ChkWifiUp()
          echo 'Wifi failed to connect, falling back to Hotspot.'
                wpa_cli terminate "$wifidev" >/dev/null 2>&1
          createAdHocNetwork
+  else
+        echo "Wifi appears to be up"
   fi
 }
 
