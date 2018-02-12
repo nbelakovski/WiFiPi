@@ -41,10 +41,4 @@ chmod +x /usr/bin/autohotspot
 
 # This should get things up and running
 sudo systemctl enable autohotspot.service
-
-# Add autohotspot to cron
-crontab -l > mycron || touch mycron # Output the current cron information to 'mycron', or create an empty 'mycron' if no cron exists for root
-# Run AutoHotspot once every minute and log the output
-echo "* * * * * sudo /usr/bin/autohotspot >> /var/log/autohotspot.log" >> mycron
-crontab mycron
-rm mycron
+sudo systemctl enable autohotspot.timer

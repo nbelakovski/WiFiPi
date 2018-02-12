@@ -12,6 +12,8 @@
 #Other setup required find out more at
 #http://www.raspberryconnect.com
 
+echo "Autohotspot running $(date)"
+
 wifidev="wlan0" #device name to use. Default is wlan0.
 #use the command: iw dev ,to see wifi interface name 
 
