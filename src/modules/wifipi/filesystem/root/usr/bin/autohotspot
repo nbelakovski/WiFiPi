@@ -12,7 +12,7 @@
 #Other setup required find out more at
 #http://www.raspberryconnect.com
 
-echo "Autohotspot running $(date)"
+echo "$(date): AutoHotspot starting"
 
 wifidev="wlan0" #device name to use. Default is wlan0.
 #use the command: iw dev ,to see wifi interface name 
@@ -62,10 +62,10 @@ ChkWifiUp()
 {
   echo "Checking WiFi connection ok"
         sleep 10 #give time for connection to be completed to router
-  if ! wpa_cli -i "$wifidev" status | grep 'ip_address' >/dev/null 2>&1
+  if ! /sbin/wpa_cli -i "$wifidev" status | grep 'ip_address' >/dev/null 2>&1
         then #Failed to connect to wifi (check your wifi settings, password etc)
          echo 'Wifi failed to connect, falling back to Hotspot.'
-               wpa_cli terminate "$wifidev" >/dev/null 2>&1
+               /sbin/wpa_cli terminate "$wifidev" >/dev/null 2>&1
          createAdHocNetwork
   else
         echo "Wifi appears to be up"
@@ -79,7 +79,7 @@ ssidChk=('NoSSid')
 i=0; j=0
 until [ $i -eq 1 ] #wait for wifi if busy, usb wifi is slower.
 do
-        ssidreply=$((iw dev "$wifidev" scan ap-force | egrep "^BSS|SSID:") 2>&1) >/dev/null 2>&1 
+        ssidreply=$((/sbin/iw dev "$wifidev" scan ap-force | egrep "^BSS|SSID:") 2>&1) >/dev/null 2>&1 
   if echo "$ssidreply" | grep "No such device (-19)" >/dev/null 2>&1; then
     NoDevice
   elif ! echo "$ssidreply" | grep "resource busy (-16)"  >/dev/null 2>&1 ;then
@@ -112,7 +112,7 @@ NoDevice()
   #if no wifi device,ie usb wifi removed, activate wifi so when it is
   #reconnected wifi to a router will be available
   echo "No wifi device connected"
-  wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+  /sbin/wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
   exit 1
 }
 
@@ -125,24 +125,24 @@ then
        then #hotspot running and ssid in range
               KillHotspot
               echo "Hotspot Deactivated, Bringing Wifi Up"
-              wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+              /sbin/wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
               ChkWifiUp
-       elif { wpa_cli -i "$wifidev" status | grep 'ip_address'; } >/dev/null 2>&1
+       elif { /sbin/wpa_cli -i "$wifidev" status | grep 'ip_address'; } >/dev/null 2>&1
        then #Already connected
               echo "Wifi already connected to a network"
        else #ssid exists and no hotspot running connect to wifi network
               echo "Connecting to the WiFi Network"
-              wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+              /sbin/wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
               ChkWifiUp
        fi
 else #ssid or MAC address not in range
        if systemctl status hostapd | grep "(running)" >/dev/null 2>&1
        then
               echo "Hostspot already active"
-       elif { wpa_cli status | grep "$wifidev"; } >/dev/null 2>&1
+       elif { /sbin/wpa_cli status | grep "$wifidev"; } >/dev/null 2>&1
        then
               echo "Cleaning wifi files and Activating Hotspot"
-              wpa_cli terminate >/dev/null 2>&1
+              /sbin/wpa_cli terminate >/dev/null 2>&1
               ip addr flush "$wifidev"
               ip link set dev "$wifidev" down
               rm -r /var/run/wpa_supplicant >/dev/null 2>&1

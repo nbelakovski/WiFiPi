@@ -21,6 +21,8 @@ echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" >> /etc/default/hostapd
 # Disable hostapd from coming up on startup. If it does, the autohotspot thinks
 # the wifi is already active
 systemctl disable hostapd
+# And dnsmasq needs to be disabled at startup since it overwrites resolv.conf
+systemctl disable dnsmasq
 
 # Add things to the dnsmasq configuration
 DNSMASQ_CONFIG_FILE=/etc/dnsmasq.conf
@@ -39,6 +41,8 @@ unpack /filesystem/root /
 # Make sure the script we just moved has the right permissions...
 chmod +x /usr/bin/autohotspot
 
-# This should get things up and running
-sudo systemctl enable autohotspot.service
-sudo systemctl enable autohotspot.timer
+# Add the crontab to root's crontab, so that the autohotspot script runs on boot and once per minute thereafter
+crontab -l > tmp.cronfile || touch tmp.cronfile
+cat /tmp/autohotspot.cronfile >> tmp.cronfile
+crontab tmp.cronfile
+rm /tmp/autohotspot.cronfile
