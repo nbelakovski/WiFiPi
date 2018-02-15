@@ -1,7 +1,7 @@
 WiFiPi
 ======
 
-A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution for easy setup, requiring no keyboard, monitor, mouse, and no custom image.
+A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution for easy setup, requiring no keyboard, monitor, mouse, and no modifications to the image.
 
 Just throw this image, with NO modifications, onto an SD card, and pop it into your Pi. Your Pi is now broadcasting a WiFi network called WiFiPi,
 password 'luggage12345'. Connect to it, at either `ssh pi@wifipi.local` or `ssh pi@10.0.0.5`. Default password is 'raspberry'.
