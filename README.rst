@@ -12,7 +12,7 @@ This repository contains the source script to generate the distribution out of a
 Where to get it?
 ----------------
 
-Releases tab
+See the `releases tab <https://github.com/nbelakovski/WiFiPi/releases>`_
 
 How to use it?
 --------------
