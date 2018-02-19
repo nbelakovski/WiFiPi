@@ -1,0 +1,8 @@
+[Unit]
+Description=Appends the last 4 of the serial number to the broadcasted ssid and the hostname
+Before=avahi-daemon.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/update_hostname_and_autohotspot_ssid
+[Install]
+WantedBy=multi-user.target

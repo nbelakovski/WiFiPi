@@ -1,0 +1,12 @@
+#!/bin/bash
+
+LAST_4_OF_SERIAL=$(cat /proc/cpuinfo | grep Serial | tail -c 5) # need to grab 5 on account of newline, but the newline won't pose a problem
+# Set the hostname with the hostname command. Convenient.
+hostname "wifipi-$LAST_4_OF_SERIAL"
+# To edit the SSID, we can't just overwrite the file since there are other settings in it
+# We'll use sed, and we'll search for the entire line starting with ssid=WiFiPi, and then
+# we'll replace the entire line. This means that when the card is moved from Pi to Pi, it updates
+# appropriately.
+sed -i s/ssid=WiFiPi.*$/ssid=WiFiPi-$LAST_4_OF_SERIAL/g /etc/hostapd/hostapd.conf
+
+# Reboot Avahi? Or get the service to run before avahi? This is the last part

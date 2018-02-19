@@ -43,6 +43,8 @@ unpack /filesystem/root /
 
 # Make sure the script we just moved has the right permissions...
 chmod +x /usr/bin/autohotspot
+chmod +x /usr/bin/update_hostname_and_autohotspot_ssid
 
 systemctl enable autohotspot.service
 systemctl enable autohotspot.timer
+systemctl enable use_serial_number.service
