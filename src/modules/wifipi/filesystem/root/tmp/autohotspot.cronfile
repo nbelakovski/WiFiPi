@@ -1,2 +1,0 @@
-@reboot /usr/bin/autohotspot >> /var/log/autohotspot.log
-* * * * * /usr/bin/autohotspot >> /var/log/autohotspot.log

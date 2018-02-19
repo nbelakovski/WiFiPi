@@ -1,0 +1,8 @@
+[Unit]
+Description=Run the AutoHotspot script once per minute
+
+[Timer]
+OnUnitInactiveSec=1min
+
+[Install]
+WantedBy=timers.target

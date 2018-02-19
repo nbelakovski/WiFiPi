@@ -32,6 +32,9 @@ echo interface=wlan0 >> $DNSMASQ_CONFIG_FILE
 echo bind-interfaces  >> $DNSMASQ_CONFIG_FILE
 echo dhcp-range=10.0.0.50,10.0.0.150,12h >> $DNSMASQ_CONFIG_FILE
 
+# Tell the dhcpcd service not to manage wpa_supplicant. /usr/bin/autohotspot will handle it
+echo "nohook wpa_supplicant" >> /etc/dhcpcd.conf
+
 # For those of us not living in england
 sed -i 's/gb/us/g' /etc/default/keyboard
 
@@ -41,8 +44,5 @@ unpack /filesystem/root /
 # Make sure the script we just moved has the right permissions...
 chmod +x /usr/bin/autohotspot
 
-# Add the crontab to root's crontab, so that the autohotspot script runs on boot and once per minute thereafter
-crontab -l > tmp.cronfile || touch tmp.cronfile
-cat /tmp/autohotspot.cronfile >> tmp.cronfile
-crontab tmp.cronfile
-rm /tmp/autohotspot.cronfile
+systemctl enable autohotspot.service
+systemctl enable autohotspot.timer

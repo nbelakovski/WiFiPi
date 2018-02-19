@@ -1,7 +1,0 @@
-/var/log/autohotspot.log
-{
-    rotate 1
-    daily
-    missingok
-    notifempty
-}
