@@ -1,12 +1,16 @@
 #!/bin/bash
 
-LAST_4_OF_SERIAL=$(cat /proc/cpuinfo | grep Serial | tail -c 5) # need to grab 5 on account of newline, but the newline won't pose a problem
-# Set the hostname with the hostname command. Convenient.
-hostname "wifipi-$LAST_4_OF_SERIAL"
-# To edit the SSID, we can't just overwrite the file since there are other settings in it
-# We'll use sed, and we'll search for the entire line starting with ssid=WiFiPi, and then
-# we'll replace the entire line. This means that when the card is moved from Pi to Pi, it updates
-# appropriately.
-sed -i s/ssid=WiFiPi.*$/ssid=WiFiPi-$LAST_4_OF_SERIAL/g /etc/hostapd/hostapd.conf
-
-# Reboot Avahi? Or get the service to run before avahi? This is the last part
+LAST_4_OF_SERIAL=$(cat /proc/cpuinfo | grep Serial | tail -c 5) # need to grab 5 on account of newline, but the newline won't get captured into the variable
+# Set the hostname with hostnamectl. Fairly straightforward
+hostnamectl set-hostname "wifipi-$LAST_4_OF_SERIAL"
+# We have to edit the /etc/hosts file manually, and we'll do that using sed so that we 
+# can target the line we want and leave the rest of the file alone. We just need to replace
+# the line starting with 127.0.1.1, and we'll opt to replace the entire line
+sed -i s/127.0.1.1.*/"127.0.1.1 wifipi-$LAST_4_OF_SERIAL"/g /etc/hosts
+# Now, we edit the SSID similarly to how we edited the /etc/hosts file, i.e. using sed to 
+# target the line we want and leave the rest of the file alone. We'll search for the line
+# starting with "ssid=WiFiPi" and as with /etc/hosts/, we'll replace that entire line with
+# what we want. By doing full replace in /etc/hosts and here, we ensure that if the SD card
+# with the OS is ever moved from one Pi to another, the SSID switches appropriately to the serial
+# number of the new Pi
+sed -i s/ssid=WiFiPi.*/ssid=WiFiPi-$LAST_4_OF_SERIAL/g /etc/hostapd/hostapd.conf
