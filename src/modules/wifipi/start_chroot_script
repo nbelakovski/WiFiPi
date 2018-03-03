@@ -9,10 +9,20 @@
 source /common.sh
 install_cleanup_trap
 
+# Put the wpa supplicant file where it belongs, and then create a symlink to it
+unpack /filesystem/boot /boot
+ln -s /boot/wpa_supplicant-wlan0.conf /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
 
-# Modify the network file to point people to wpa-supplicant
-sed -i "s@here\"@phere\" # For WiFiPi, use /boot/wifipi-wpa-supplicant.conf!@g" /boot/wifipi-network.txt
+# copy /etc/wpa_supplicant/ifupdown.sh to /etc/ifplugd/action.d/ifupdown - for wlan auto reconnect
+[ -f /etc/ifplugd/action.d/ifupdown ] && mv /etc/ifplugd/action.d/ifupdown /etc/ifplugd/action.d/ifupdown.original
+[ -f /etc/wpa_supplicant/ifupdown.sh ] && ln -s /etc/wpa_supplicant/ifupdown.sh /etc/ifplugd/action.d/ifupdown
 
+# prevent ntp updates from failing due to some Rpi3 weirdness
+sed -i 's@exit 0@@' /etc/rc.local
+echo '/sbin/iptables -t mangle -I POSTROUTING 1 -o wlan0 -p udp --dport 123 -j TOS --set-tos 0x00' >> /etc/rc.local
+echo 'exit 0' >> /etc/rc.local
+
+# Install a few things we'll need for the autohotspot service
 apt-get update
 apt-get install -y dnsmasq hostapd
 
