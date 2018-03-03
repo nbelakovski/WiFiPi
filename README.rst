@@ -51,7 +51,8 @@ From here, you can do whatever it is you wanted to do with the Pi. Most people w
 #. Press Ctrl+O to save your changes, and Ctrl+X to exit. Within a minute (or possibly as soon as you hit Ctrl+O), the autohotspot service will pick up your changes and attempt to connect to the network you specified.
 #. Your ssh connection may get stuck as autohotspot kills the WiFiPi-xxxx network to attempt to connect to the network you specified. If that's the case, type '~.' into your terminal and that should disconnect you.
 #. If the Pi successfully connected to the network you specified, connect your laptop/desktop to the same network, and from your terminal type ``ssh pi@wifipi-xxxx.local`` where xxxx is what you wrote down in a previous step. If you don't remember it, you could go to your computer's saved WiFi networks and see if it's there, or use other tools to find the IP address of your Pi and connect to it via IP instead of hostname (i.e. ``ssh pi@123.456.789.012`` instead of ``ssh pi@wifipi-xxxx.local``) (perhaps logging into your router and seeing who's connected).
-#. If it was unsuccessful, it should bring WiFiPi-xxxx back up, and from there you can ssh back into it and examine your network settings. If they look correct and you want it to try again, type ``touch /etc/wpa_supplicant/wpa_supplicant-wlan0.conf``
+#. If it was unsuccessful, it should bring WiFiPi-xxxx back up, and from there you can ssh back into it and examine your network settings. If they look correct and you want it to try again, type ``touch /etc/wpa_supplicant/wpa_supplicant-wlan0.conf`` and wait a minute for autohotspot to try again.
+#. If you want to take a look at logs to see if there's a hint as to why it was unsuccessful, try ``journalctl -u autohotspot`` and also ``journalctl -u wpa_supplicant@wlan0``
 
 If you're having issues, come back here and create an issue in the Issues tab!
 
